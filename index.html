@@ -4,377 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>smollta scale</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;700&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            background: #ffffff;
-            font-family: 'DM Sans', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 48px 16px 64px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-
-        h1 {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.25rem;
-            letter-spacing: 0.12em;
-            color: #111;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .subtitle {
-            font-size: 0.78rem;
-            color: #bbb;
-            letter-spacing: 0.06em;
-            font-weight: 400;
-        }
-
-        .input-card {
-            background: #fff;
-            border: 1.5px solid #ebebeb;
-            border-radius: 16px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        }
-
-        label {
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: #aaa;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        input[type="number"] {
-            font-family: 'Space Mono', monospace;
-            font-size: 1rem;
-            padding: 9px 14px;
-            border: 1.5px solid #ebebeb;
-            border-radius: 10px;
-            background: #fafafa;
-            width: 130px;
-            outline: none;
-            color: #111;
-            transition: border-color 0.2s, background 0.2s;
-            -moz-appearance: textfield;
-        }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-        input[type="number"]:focus {
-            border-color: #111;
-            background: #fff;
-        }
-
-        button {
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 700;
-            font-size: 0.8rem;
-            letter-spacing: 0.04em;
-            padding: 9px 18px;
-            background: #111;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.18s, transform 0.1s;
-            white-space: nowrap;
-        }
-        button:hover { background: #333; }
-        button:active { transform: scale(0.97); }
-
-        .hasil-teks {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.82rem;
-            color: #111;
-            font-weight: 700;
-            min-height: 32px;
-            margin-bottom: 24px;
-            background: #f5f5f5;
-            border-radius: 999px;
-            padding: 6px 18px;
-            letter-spacing: 0.04em;
-            opacity: 0;
-            transform: translateY(4px);
-            transition: opacity 0.25s, transform 0.25s;
-        }
-        .hasil-teks.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .chart-wrap {
-            position: relative;
-            width: 340px;
-            background: #fff;
-            border: 1.5px solid #ebebeb;
-            border-radius: 20px;
-            box-shadow: 0 4px 28px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chart-inner {
-            display: flex;
-            flex-direction: row;
-            position: relative;
-            height: 320px;
-        }
-
-        .ruler {
-            width: 52px;
-            flex-shrink: 0;
-            position: relative;
-            height: 100%;
-            border-right: 1px solid #f0f0f0;
-        }
-        .ruler-tick {
-            position: absolute;
-            left: 0;
-            width: 52px;
-            display: flex;
-            align-items: center;
-            transform: translateY(50%);
-        }
-        .ruler-tick span {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.58rem;
-            color: #ccc;
-            padding-left: 8px;
-            white-space: nowrap;
-        }
-        .ruler-tick::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            width: 6px;
-            height: 1px;
-            background: #e0e0e0;
-        }
-
-        .figure-area {
-            flex: 1;
-            position: relative;
-            height: 100%;
-            background: #fafafa;
-        }
-
-        .grid-line {
-            position: absolute;
-            left: 0; right: 0;
-            height: 1px;
-            background: #f0f0f0;
-        }
-
-        .input-line {
-            position: absolute;
-            left: 0; right: 0;
-            border-top: 1.5px dashed #ccc;
-            pointer-events: none;
-            z-index: 4;
-        }
-
-        .figure-wrapper {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .fig-top-label {
-            position: absolute;
-            top: -22px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.6rem;
-            color: #999;
-            text-align: center;
-            white-space: nowrap;
-            background: #fff;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid #ebebeb;
-        }
-
-        .figure-img {
-            display: block;
-            object-fit: contain;
-            object-position: bottom center;
-            transition: height 0.35s cubic-bezier(0.4,0,0.2,1);
-        }
-
-        .floor {
-            height: 34px;
-            background: #f5f5f5;
-            border-top: 1.5px solid #ebebeb;
-            display: flex;
-            align-items: center;
-            padding-left: 60px;
-            flex-shrink: 0;
-        }
-        .floor-label {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.58rem;
-            color: #ccc;
-            letter-spacing: 0.04em;
-        }
-
-        .empty-hint {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.78rem;
-            color: #ddd;
-            font-style: italic;
-            text-align: center;
-            width: 100%;
-            pointer-events: none;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="header">
-    <a href="https://www.facebook.com/share/1E9PKqktnB/" target="_blank" style="text-decoration: none;">
-        <h1>smollta scale</h1>
-    </a>
-    <p class="subtitle">berapa smollta tingginya itu?</p>
-    <p class="subtitle">1 smollta = 1,46m</p>
-</div>
-
-
-<div class="input-card">
-    <label for="inputMeter">tinggi</label>
-    <input type="number" id="inputMeter" step="0.01" max="4000" placeholder="max 4000">
-    <button onclick="hitungSkala()">iitung</button>
-</div>
-
-<div class="hasil-teks" id="hasilTeks"></div>
-
-<div class="chart-wrap" id="chartWrap">
-    <div class="chart-inner">
-        <div class="ruler" id="ruler"></div>
-        <div class="figure-area" id="figureArea">
-            <span class="empty-hint">masukkan angka dulu</span>
-        </div>
+<div class="app-wrapper">
+    
+    <div class="header">
+        <a href="https://www.facebook.com/share/1E9PKqktnB/" target="_blank">
+            <h1>smollta scale</h1>
+        </a>
+        <p class="subtitle">berapa smollta tingginyaitu?</p>
     </div>
-    <div class="floor">
-        <span class="floor-label">0 m</span>
-    </div>
-</div>
 
-<script>
-    const SMOLLTA_H = 1.46;
-    const IMG_SRC   = "euh.png";
-    const CHART_H   = 320;
-    const MAX_LIMIT = 4000;
-
-    function hitungSkala() {
-        let input = parseFloat(document.getElementById('inputMeter').value);
+    <div class="app-layout">
         
-        if (input > MAX_LIMIT) {
-            input = MAX_LIMIT;
-            document.getElementById('inputMeter').value = MAX_LIMIT;
-        }
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="btnMeterToSmollta" onclick="setMode('u2s')">satuan → smollta</button>
+            <button class="mode-btn" id="btnSmolltaToMeter" onclick="setMode('s2u')">smollta → satuan</button>
+        </div>
 
-        const hasilTeks  = document.getElementById('hasilTeks');
-        const figureArea = document.getElementById('figureArea');
-        const rulerEl    = document.getElementById('ruler');
+        <div class="control-panel">
+            <div class="unit-row" id="unitRowInput" style="display:flex;">
+                <span class="unit-label">pilih satuan</span>
+                <select class="unit-select" id="unitSelectInput" onchange="hitung()">
+                    <option value="mm">milimeter (mm)</option>
+                    <option value="cm">sentimeter (cm)</option>
+                    <option value="dm">desimeter (dm)</option>
+                    <option value="m" selected>meter (m)</option>
+                    <option value="dam">dekameter (dam)</option>
+                    <option value="hm">hektometer (hm)</option>
+                    <option value="km">kilometer (km)</option>
+                </select>
+            </div>
 
-        if (isNaN(input) || input <= 0) {
-            hasilTeks.textContent = "";
-            hasilTeks.classList.remove('visible');
-            figureArea.innerHTML = '<span class="empty-hint">masukkan angka dulu~</span>';
-            rulerEl.innerHTML = '';
-            return;
-        }
+            <div class="unit-row" id="unitRowOutput" style="display:none;">
+                <span class="unit-label">pilih satuan</span>
+                <select class="unit-select" id="unitSelectOutput" onchange="hitung()">
+                    <option value="mm">milimeter (mm)</option>
+                    <option value="cm">sentimeter (cm)</option>
+                    <option value="dm">desimeter (dm)</option>
+                    <option value="m" selected>meter (m)</option>
+                    <option value="dam">dekameter (dam)</option>
+                    <option value="hm">hektometer (hm)</option>
+                    <option value="km">kilometer (km)</option>
+                </select>
+            </div>
 
-        const ratio = input / SMOLLTA_H;
-        hasilTeks.textContent = input.toFixed(2) + " m = " + ratio.toFixed(3) + " smollta";
-        hasilTeks.classList.add('visible');
+            <div class="input-group">
+                <span class="input-label-text" id="inputLabel">tinggi (m)</span>
+                <div class="input-wrapper">
+                    <input type="number" id="inputVal" step="0.01" placeholder="angka">
+                    <button class="calc-btn" onclick="hitung()">iitung</button>
+                </div>
+                
+                <label class="toggle-wrap" for="toggleStack">
+                    <input type="checkbox" id="toggleStack" class="toggle-checkbox" onchange="hitung()">
+                    <span class="toggle-text">tumpuk (kurang akurat)</span>
+                </label>
+            </div>
+        </div>
 
-        const maxMeterInChart = Math.max(input, SMOLLTA_H) * 1.1;
-        const pxPerM = CHART_H / maxMeterInChart;
+        <div class="hasil-wrap">
+            <div class="hasil-teks" id="hasilTeks"></div>
+            <div class="hasil-tumpuk" id="hasilTumpuk"></div>
+        </div>
 
-        const figH   = Math.round(SMOLLTA_H * pxPerM);
-        const inputY = Math.round(input * pxPerM);
+        <div class="visual-panel">
+            <div class="chart-wrap" id="chartWrap">
+                <div class="chart-inner">
+                    <div class="ruler" id="ruler"></div>
+                    <div class="figure-area" id="figureArea">
+                        <span class="empty-hint">masukkan angka dulu desuwa</span>
+                    </div>
+                </div>
+                <div class="floor">
+                    <span class="floor-label">0 m — lantai</span>
+                </div>
+            </div>
+        </div>
 
-        figureArea.innerHTML = '';
-        rulerEl.innerHTML    = '';
+        <div class="tables-grid">
+            <div class="table-section">
+                <div class="table-title">satuan → smollta</div>
+                <table class="conversion-table">
+                    <tr><td>1 mm</td><td>= 0.000685 smollta</td></tr>
+                    <tr><td>1 cm</td><td>= 0.00685 smollta</td></tr>
+                    <tr><td>1 dm</td><td>= 0.0685 smollta</td></tr>
+                    <tr><td>1 m</td><td>= 0.685 smollta</td></tr>
+                    <tr><td>1 dam</td><td>= 6.849 smollta</td></tr>
+                    <tr><td>1 hm</td><td>= 68.49 smollta</td></tr>
+                    <tr><td>1 km</td><td>= 684.93 smollta</td></tr>
+                </table>
+            </div>
 
-        const niceIntervals = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
-        let interval = niceIntervals.find(iv => maxMeterInChart / iv <= 7) || 1000;
+            <div class="table-section">
+                <div class="table-title">smollta → satuan</div>
+                <table class="conversion-table">
+                    <tr><td>1 smollta</td><td>= 1460 mm</td></tr>
+                    <tr><td>1 smollta</td><td>= 146 cm</td></tr>
+                    <tr><td>1 smollta</td><td>= 14.6 dm</td></tr>
+                    <tr><td>1 smollta</td><td>= 1.46 m</td></tr>
+                    <tr><td>1 smollta</td><td>= 0.146 dam</td></tr>
+                    <tr><td>1 smollta</td><td>= 0.0146 hm</td></tr>
+                    <tr><td>1 smollta</td><td>= 0.00146 km</td></tr>
+                </table>
+            </div>
+        </div>
+        
+    </div>
 
-        for (let m = 0; m <= maxMeterInChart; m = +(m + interval).toFixed(8)) {
-            const fromBottom = Math.round(m * pxPerM);
-            if (fromBottom > CHART_H) break;
+</div>
 
-            const tick = document.createElement('div');
-            tick.className = 'ruler-tick';
-            tick.style.bottom = fromBottom + 'px';
-            const span = document.createElement('span');
-            span.textContent = m % 1 === 0 ? m + 'm' : m.toFixed(m < 1 ? 2 : 1) + 'm';
-            tick.appendChild(span);
-            rulerEl.appendChild(tick);
-
-            if (m > 0) {
-                const gl = document.createElement('div');
-                gl.className = 'grid-line';
-                gl.style.bottom = fromBottom + 'px';
-                figureArea.appendChild(gl);
-            }
-        }
-
-        const topLine = document.createElement('div');
-        topLine.className = 'input-line';
-        topLine.style.bottom = inputY + 'px';
-        figureArea.appendChild(topLine);
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'figure-wrapper';
-        wrapper.style.bottom = '0px';
-        wrapper.style.height = figH + 'px';
-
-        const topLabel = document.createElement('div');
-        topLabel.className = 'fig-top-label';
-        topLabel.textContent = ratio.toFixed(2) + " smollta";
-        wrapper.appendChild(topLabel);
-
-        const img = document.createElement('img');
-        img.src       = IMG_SRC;
-        img.alt       = "smollta";
-        img.className = 'figure-img';
-        img.style.height = figH + 'px';
-        img.style.width  = 'auto';
-        wrapper.appendChild(img);
-
-        figureArea.appendChild(wrapper);
-    }
-
-    document.getElementById('inputMeter').addEventListener('input', hitungSkala);
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
